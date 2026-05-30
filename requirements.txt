@@ -1,0 +1,3 @@
+# Runtime tested with Python 3.10 in the local .venv.
+tensorflow==2.15.1
+numpy==1.26.4
