@@ -1,3 +1,5 @@
-# Runtime tested with Python 3.10 in the local .venv.
-tensorflow==2.15.1
+# Colab currently offers TensorFlow 2.16+ on newer Python runtimes.
+# tf-keras keeps the TensorFlow v1 RNN cell APIs available.
+tensorflow==2.16.2
+tf-keras==2.16.0
 numpy==1.26.4

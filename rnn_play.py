@@ -1,3 +1,6 @@
+import os
+os.environ.setdefault("TF_USE_LEGACY_KERAS", "1")
+
 import tensorflow.compat.v1 as tf
 import numpy as np
 import my_txtutils

@@ -14,9 +14,11 @@
 # limitations under the License.
 from __future__ import print_function
 
+import os
+os.environ.setdefault("TF_USE_LEGACY_KERAS", "1")
+
 import tensorflow.compat.v1 as tf
 from tensorflow.compat.v1.nn import rnn_cell as rnn
-import os
 import time
 import math
 import numpy as np
