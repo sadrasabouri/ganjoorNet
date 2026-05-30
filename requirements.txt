@@ -1,5 +1,4 @@
-# Colab currently offers TensorFlow 2.16+ on newer Python runtimes.
+# Colab Python 3.12-compatible pins.
 # tf-keras keeps the TensorFlow v1 RNN cell APIs available.
-tensorflow==2.16.2
-tf-keras==2.16.0
-numpy==1.26.4
+tensorflow==2.19.1
+tf-keras==2.19.0
