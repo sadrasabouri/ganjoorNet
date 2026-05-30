@@ -14,14 +14,14 @@
 # limitations under the License.
 from __future__ import print_function
 
-import tensorflow as tf
-from tensorflow.contrib import layers
-from tensorflow.contrib import rnn  # rnn stuff temporarily in contrib, moving back to code in TF 1.1
+import tensorflow.compat.v1 as tf
+from tensorflow.compat.v1.nn import rnn_cell as rnn
 import os
 import time
 import math
 import numpy as np
 import my_txtutils as txt
+tf.disable_v2_behavior()
 tf.set_random_seed(0)
 
 # model parameters
@@ -74,9 +74,12 @@ Hin = tf.placeholder(tf.float32, [None, INTERNALSIZE*NLAYERS], name='Hin')  # [ 
 # using a NLAYERS=3 layers of GRU cells, unrolled SEQLEN=30 times
 # dynamic_rnn infers SEQLEN from the size of the inputs Xo
 
-onecell = rnn.GRUCell(INTERNALSIZE)
-dropcell = rnn.DropoutWrapper(onecell, input_keep_prob=pkeep)
-multicell = rnn.MultiRNNCell([dropcell]*NLAYERS, state_is_tuple=False)
+def make_cell():
+    onecell = rnn.GRUCell(INTERNALSIZE)
+    return rnn.DropoutWrapper(onecell, input_keep_prob=pkeep)
+
+
+multicell = rnn.MultiRNNCell([make_cell() for _ in range(NLAYERS)], state_is_tuple=False)
 multicell = rnn.DropoutWrapper(multicell, output_keep_prob=pkeep)
 Yr, H = tf.nn.dynamic_rnn(multicell, Xo, dtype=tf.float32, initial_state=Hin)
 # Yr: [ BATCHSIZE, SEQLEN, INTERNALSIZE ]
@@ -90,7 +93,7 @@ H = tf.identity(H, name='H')  # just to give it a name
 # From the readout point of view, a value coming from a cell or a minibatch is the same thing
 
 Yflat = tf.reshape(Yr, [-1, INTERNALSIZE])    # [ BATCHSIZE x SEQLEN, INTERNALSIZE ]
-Ylogits = layers.linear(Yflat, ALPHASIZE)     # [ BATCHSIZE x SEQLEN, ALPHASIZE ]
+Ylogits = tf.layers.dense(Yflat, ALPHASIZE)   # [ BATCHSIZE x SEQLEN, ALPHASIZE ]
 Yflat_ = tf.reshape(Yo_, [-1, ALPHASIZE])     # [ BATCHSIZE x SEQLEN, ALPHASIZE ]
 loss = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=Yflat_)  # [ BATCHSIZE x SEQLEN ]
 loss = tf.reshape(loss, [batchsize, -1])      # [ BATCHSIZE, SEQLEN ]

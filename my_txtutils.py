@@ -346,15 +346,14 @@ def read_data_files(directory, validation=True):
     bookranges = []
     shakelist = glob.glob(directory + "**")
     for shakefile in shakelist:
-        shaketext = open(shakefile, "r")
-        print("Loading file " + shakefile)
-        start = len(codetext)
-        codetext.extend([1000, 34])
-        codetext.extend(encode_text(shaketext.read().decode('utf8')))
-        codetext.extend([34,2000])
-        end = len(codetext)
-        bookranges.append({"start": start, "end": end, "name": shakefile.rsplit("/", 1)[-1]})
-        shaketext.close()
+        with open(shakefile, "r", encoding="utf-8") as shaketext:
+            print("Loading file " + shakefile)
+            start = len(codetext)
+            codetext.extend([1000, 34])
+            codetext.extend(encode_text(shaketext.read()))
+            codetext.extend([34, 2000])
+            end = len(codetext)
+            bookranges.append({"start": start, "end": end, "name": shakefile.rsplit("/", 1)[-1]})
 
     if len(bookranges) == 0:
         sys.exit("No training data has been found. Aborting.")

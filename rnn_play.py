@@ -1,6 +1,8 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 import my_txtutils
+
+tf.disable_v2_behavior()
 
 # these must match what was saved !
 ALPHASIZE = my_txtutils.ALPHASIZE
@@ -18,15 +20,15 @@ with tf.Session() as sess:
     new_saver = tf.train.import_meta_graph(meta_graph)
     new_saver.restore(sess, author)
 
-    file = open("sher.txt", "w")
-    inputFile = open("test.txt", "r")
+    file = open("sher.txt", "w", encoding="utf-8")
+    inputFile = open("test.txt", "r", encoding="utf-8")
 
-    init_text = inputFile.read().decode('utf8')
+    init_text = inputFile.read()
     encoded_text = my_txtutils.encode_text(init_text);
     # y = np.array([[encoded_text]])  # shape [BATCHSIZE, SEQLEN] with BATCHSIZE=1 and SEQLEN=1
     h = np.zeros([1, INTERNALSIZE * NLAYERS], dtype=np.float32)  # [ BATCHSIZE, INTERNALSIZE * NLAYERS]
     for char in init_text:
-        file.write(char.encode('utf8'));
+        file.write(char);
 
     for i in range(len(encoded_text)-1):
         y = np.array([[encoded_text[i]]])
@@ -51,7 +53,7 @@ with tf.Session() as sess:
 
         c = chr(my_txtutils.convert_to_alphabet(c))
         print(c, end="")
-        file.write(c.encode('utf8'))
+        file.write(c)
 
         if c == '\n':
             ncnt = 0
